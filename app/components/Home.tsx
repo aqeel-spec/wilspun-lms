@@ -23,13 +23,8 @@ const Home: FC<Props> = () => {
   const fallbackComponent = <LoadingSpinner />;
 
   return (
-    <div className="page-container">
-      <Heading
-        title="ELearning"
-        description="ELearning is a platform for students to learn and get help from teachers"
-        keywords="Programming, MERN, Redux, Machine Learning"
-      />
-      <Suspense fallback={fallbackComponent}>
+    <Suspense fallback={fallbackComponent}>
+      <div className="page-container">
         <Header
           open={open}
           setOpen={setOpen}
@@ -37,23 +32,13 @@ const Home: FC<Props> = () => {
           setRoute={setRoute}
           route={route}
         />
-      </Suspense>
-      <Suspense fallback={fallbackComponent}>
         <Hero />
-      </Suspense>
-      <Suspense fallback={fallbackComponent}>
         <Courses />
-      </Suspense>
-      <Suspense fallback={fallbackComponent}>
         <Reviews />
-      </Suspense>
-      <Suspense fallback={fallbackComponent}>
         <FAQ />
-      </Suspense>
-      <Suspense fallback={fallbackComponent}>
-        <Footer />
-      </Suspense>
-    </div>
+        
+      </div>
+    </Suspense>
   );
 };
 

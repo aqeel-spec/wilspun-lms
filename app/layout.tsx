@@ -6,10 +6,15 @@ import { ThemeProvider } from "./utils/theme-provider";
 import { Toaster } from "react-hot-toast";
 import { Providers } from "./Provider";
 import { SessionProvider } from "next-auth/react";
-import React, { FC, useEffect } from "react";
+// import CustomProvider from "./utils/CustomProvider";
+
+import React, { FC, useEffect, Suspense } from "react";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
-import Loader from "./components/Loader/Loader";
+import Loader from "@/app/components/Loader/Loader";
 import socketIO from "socket.io-client";
+import Footer from "./components/Footer";
+import Heading from "./utils/Heading";
+
 const ENDPOINT = process.env.NEXT_PUBLIC_SOCKET_SERVER_URI || "";
 const socketId = socketIO(ENDPOINT, { transports: ["websocket"] });
 
@@ -38,9 +43,15 @@ export default function RootLayout({
         <Providers>
           <SessionProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <Custom>
-                <div>{children}</div>
-              </Custom>
+              <CustomProvider>
+                <Heading
+                  title="ELearning"
+                  description="ELearning is a platform for students to learn and get help from teachers"
+                  keywords="Programming, MERN, Redux, Machine Learning"
+                />
+                {children}
+                <Footer />
+              </CustomProvider>
               <Toaster position="top-center" reverseOrder={false} />
             </ThemeProvider>
           </SessionProvider>
@@ -50,12 +61,22 @@ export default function RootLayout({
   );
 }
 
-const Custom: FC<{ children: React.ReactNode }> = ({ children }) => {
+const CustomProvider: FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isLoading } = useLoadUserQuery({});
 
   useEffect(() => {
     socketId.on("connection", () => {});
   }, []);
 
-  return <div>{isLoading ? <><Loader /></> : <div>{children} </div>}</div>;
+  return (
+    <div>
+      {isLoading ? (
+        <>
+          <Loader />
+        </>
+      ) : (
+        <div>{children} </div>
+      )}
+    </div>
+  );
 };

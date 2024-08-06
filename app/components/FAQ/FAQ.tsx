@@ -1,7 +1,8 @@
 import { styles } from '@/app/styles/style';
 import { useGetHeroDataQuery } from '@/redux/features/layout/layoutApi';
-import React, { useEffect, useState } from 'react'
+import React, { Suspense, useEffect, useState } from 'react'
 import { HiMinus, HiPlus } from 'react-icons/hi';
+import Loader from '../Loader/Loader';
 
 type Props = {}
 
@@ -22,7 +23,7 @@ const FAQ = (props: Props) => {
   };
 
   return (
-    <div>
+    <Suspense fallback={<div><Loader /></div>}>
          <div className="w-[90%] 800px:w-[80%] m-auto">
         <h1 className={`${styles.title} 800px:text-[40px]`}>
           Frequently Asked Questions
@@ -63,7 +64,7 @@ const FAQ = (props: Props) => {
         <br />
         <br />
       </div> 
-    </div>
+    </Suspense>
   )
 }
 

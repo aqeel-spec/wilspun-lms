@@ -15,6 +15,7 @@ import { useLogOutQuery, useSocialAuthMutation } from "@/redux/features/auth/aut
 import { toast } from "react-hot-toast";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import Loader from "./Loader/Loader";
+import HeadingSkeleton from "./ui/headerSkel";
 
 type Props = {
   open: boolean;
@@ -80,7 +81,7 @@ const Header: FC<Props> = ({ activeItem, setOpen, route, open, setRoute }) => {
    <>
    {
     isLoading ? (
-      <Loader />
+      <HeadingSkeleton />
     ) : (
       <div className="w-full relative">
       <div
