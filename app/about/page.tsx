@@ -1,16 +1,24 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Heading from "../utils/Heading";
-import Header from "../components/Header";
 import About from "./About";
-import Footer from "../components/Footer";
+import { GlobalContext } from "../context/GlobalContext";
 
-type Props = {};
 
-const Page = (props: Props) => {
-  const [open, setOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(2);
-  const [route, setRoute] = useState("Login");
+const AboutPage = () => {
+  const globalContext = useContext(GlobalContext);
+
+  if (!globalContext) {
+    throw new Error("GlobalContext must be used within a GlobalProvider");
+  }
+
+  const { setActiveItem, setRoute } = globalContext;
+
+  useEffect(() => {
+    setActiveItem(2); // Assuming '2' corresponds to the "About" item
+    setRoute("About");
+  }, [setActiveItem, setRoute]);
 
   return (
     <div>
@@ -19,17 +27,9 @@ const Page = (props: Props) => {
         description="Elearning is a learning management system for helping programmers."
         keywords="programming,mern"
       />
-      <Header
-        open={open}
-        setOpen={setOpen}
-        activeItem={activeItem}
-        setRoute={setRoute}
-        route={route}
-      />
       <About />
-      <Footer />
     </div>
   );
 };
 
-export default Page;
+export default AboutPage;

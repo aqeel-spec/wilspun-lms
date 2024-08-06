@@ -10,47 +10,85 @@ type Props = {
 };
 
 const CourseCard: FC<Props> = ({ item, isProfile }) => {
+  // Function to truncate the course name and add tooltip
+  const truncateName = (name: string, length: number) => {
+    if (name.length > length) {
+      return name.slice(0, length) + "...";
+    }
+    return name;
+  };
+
   return (
     <Link
       href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`}
     >
-      <div className="w-full min-h-[35vh] dark:bg-slate-500 dark:bg-opacity-20 backdrop-blur border dark:border-[#ffffff1d] border-[#00000015] dark:shadow-[bg-slate-700] rounded-lg p-3 shadow-sm dark:shadow-inner">
-        <Image
-          src={item.thumbnail.url}
-          width={500}
-          height={300}
-          objectFit="contain"
-          className="rounded w-full"
-          alt=""
-        />
-        <br />
-        <h1 className="font-Poppins text-[16px] text-black dark:text-[#fff]">
-          {item.name}
-        </h1>
-        <div className="w-full flex items-center justify-between pt-2">
-          <Ratings rating={item.ratings} />
-          <h5
-            className={`text-black dark:text-[#fff] ${
-              isProfile && "hidden 800px:inline"
-            }`}
-          >
-            {item.purchased} Students
-          </h5>
+      <div className="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden">
+        <div className="w-full h-[150px] overflow-hidden">
+          <Image
+            src={item.thumbnail.url}
+            width={500}
+            height={300}
+            objectFit="cover"
+            className="w-full h-full object-cover"
+            alt={item.name}
+          />
         </div>
-        <div className="w-full flex items-center justify-between pt-3">
-          <div className="flex">
-            <h3 className="text-black dark:text-[#fff]">
-              {item.price === 0 ? "Free" : item.price + "$"}
-            </h3>
-            <h5 className="pl-3 text-[14px] mt-[-5px] line-through opacity-80 text-black dark:text-[#fff]">
-              {item.estimatedPrice}$
-            </h5>
+        <div className="p-5">
+          <h5
+            className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate"
+            title={item.name}
+          >
+            {truncateName(item.name, 70)}
+          </h5>
+          <div className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            {item.shortDescription || "No description available"}
           </div>
-          <div className="flex items-center pb-3">
-            <AiOutlineUnorderedList size={20} fill="#fff" />
-            <h5 className="pl-2 text-black dark:text-[#fff]">
-              {item.courseData?.length} Lectures
-            </h5>
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center">
+              <Ratings rating={item.ratings} />
+              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                ({item.ratingsCount || 0})
+              </span>
+            </div>
+            <div className="flex items-center">
+              <AiOutlineUnorderedList size={20} fill="#fff" />
+              <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                {item.courseData?.length} Lectures
+              </span>
+            </div>
+          </div>
+          <div className="flex justify-between items-center">
+            <div className="flex items-center">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {item.price === 0 ? "Free" : `${item.price}$`}
+              </h3>
+              {item.estimatedPrice > 0 && (
+                <span className="pl-3 text-sm line-through text-gray-500 dark:text-gray-400">
+                  {item.estimatedPrice}$
+                </span>
+              )}
+            </div>
+            <a
+              href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`}
+              className="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            >
+              Read more
+              <svg
+                className="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 14 10"
+              >
+                <path
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M1 5h12m0 0L9 1m4 4L9 9"
+                />
+              </svg>
+            </a>
           </div>
         </div>
       </div>

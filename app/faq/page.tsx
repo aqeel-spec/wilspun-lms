@@ -1,16 +1,29 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useContext } from "react";
+import dynamic from "next/dynamic";
 import Heading from "../utils/Heading";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import FAQ from "../components/FAQ/FAQ";
+import { GlobalContext } from "../context/GlobalContext";
+import LoadingSpinner from "../components/Loader/Loader";
 
-type Props = {};
+const FAQ = dynamic(() => import("../components/FAQ/FAQ"), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
 
-const Page = (props: Props) => {
-  const [open, setOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(4);
-  const [route, setRoute] = useState("Login");
+const FAQPage: React.FC = () => {
+  const globalContext = useContext(GlobalContext);
+
+  if (!globalContext) {
+    throw new Error("GlobalContext must be used within a GlobalProvider");
+  }
+
+  const { setActiveItem, setRoute, setOpen } = globalContext;
+
+  useEffect(() => {
+    setActiveItem(4); // Assuming '4' corresponds to the "FAQ" item
+    setRoute("FAQ");
+    setOpen(false); // Assuming you want to start with the modal closed
+  }, [setActiveItem, setRoute, setOpen]);
 
   return (
     <div className="min-h-screen">
@@ -19,18 +32,10 @@ const Page = (props: Props) => {
         description="Elearning is a learning management system for helping programmers."
         keywords="programming,mern"
       />
-      <Header
-        open={open}
-        setOpen={setOpen}
-        activeItem={activeItem}
-        setRoute={setRoute}
-        route={route}
-      />
       <br />
       <FAQ />
-      <Footer />
     </div>
   );
 };
 
-export default Page;
+export default FAQPage;

@@ -1,44 +1,49 @@
 "use client";
-import React, { FC, useState, lazy, Suspense } from "react";
-import Heading from "../utils/Heading";
+import React, { useEffect, useContext } from "react";
+import dynamic from "next/dynamic";
+import { GlobalContext } from "../context/GlobalContext";
 import LoadingSpinner from "../components/Loader/Loader"; // Assume there's a spinner component for loading
 
-// Lazy load the components
-const Header = lazy(() => import("../components/Header"));
-const Hero = lazy(() => import("../components/Route/Hero"));
-const Courses = lazy(() => import("../components/Route/Courses"));
-const Reviews = lazy(() => import("../components/Route/Reviews"));
-const FAQ = lazy(() => import("../components/FAQ/FAQ"));
-const Footer = lazy(() => import("../components/Footer"));
 
-export const dynamic = "force-dynamic";
+const Hero = dynamic(() => import("../components/Route/Hero"), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
+const Courses = dynamic(() => import("../components/Route/Courses"), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
+const Reviews = dynamic(() => import("../components/Route/Reviews"), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
+const FAQ = dynamic(() => import("../components/FAQ/FAQ"), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
 
-interface Props {}
+const Home: React.FC = () => {
+  const globalContext = useContext(GlobalContext);
 
-const Home: FC<Props> = () => {
-  const [open, setOpen] = useState(false);
-  const [activeItem, setActiveItem] = useState(0);
-  const [route, setRoute] = useState("Login");
+  if (!globalContext) {
+    throw new Error("GlobalContext must be used within a GlobalProvider");
+  }
 
-  const fallbackComponent = <LoadingSpinner />;
+  const { setActiveItem, setRoute } = globalContext;
+
+  // Set the initial values for Home page
+  useEffect(() => {
+    setActiveItem(0); // Assuming '0' corresponds to the "Home" item
+    setRoute("Home");
+  }, [setActiveItem, setRoute]);
 
   return (
-    <Suspense fallback={fallbackComponent}>
-      <div className="page-container">
-        <Header
-          open={open}
-          setOpen={setOpen}
-          activeItem={activeItem}
-          setRoute={setRoute}
-          route={route}
-        />
-        <Hero />
-        <Courses />
-        <Reviews />
-        <FAQ />
-        
-      </div>
-    </Suspense>
+    <div className="page-container">
+      <Hero />
+      <Courses />
+      <Reviews />
+      <FAQ />
+    </div>
   );
 };
 
