@@ -12,6 +12,7 @@ import { styles } from "../../../app/styles/style";
 import { useLoginMutation } from "@/redux/features/auth/authApi";
 import { toast } from "react-hot-toast";
 import {signIn} from "next-auth/react";
+import  { useRouter } from "next/navigation";
 
 type Props = {
   setRoute: (route: string) => void;
@@ -36,12 +37,15 @@ const Login: FC<Props> = ({ setRoute, setOpen,refetch }) => {
       await login({ email, password });
     },
   });
+  const {refresh} = useRouter();
 
   useEffect(() => {
     if (isSuccess) {
       toast.success("Login Successfully!");
       setOpen(false);
-      refetch();
+      // refetch();
+      refresh();
+
     }
     if (error) {
       if ("data" in error) {

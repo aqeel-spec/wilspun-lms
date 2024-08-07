@@ -1,10 +1,14 @@
 "use client";
-import React, { useEffect, useContext } from "react";
+import React, { FC, Suspense, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { GlobalContext } from "../context/GlobalContext";
+import { useAppDispatch, useAppSelector } from "@/redux/features/reduxHooks";
+import { setOpen, setActiveItem, setRoute } from "@/redux/features/globalSlice";
 import LoadingSpinner from "../components/Loader/Loader"; // Assume there's a spinner component for loading
 
-
+const Header = dynamic(() => import("../components/Header"), {
+  ssr: false,
+  loading: () => <LoadingSpinner />,
+});
 const Hero = dynamic(() => import("../components/Route/Hero"), {
   ssr: false,
   loading: () => <LoadingSpinner />,
@@ -22,28 +26,29 @@ const FAQ = dynamic(() => import("../components/FAQ/FAQ"), {
   loading: () => <LoadingSpinner />,
 });
 
-const Home: React.FC = () => {
-  const globalContext = useContext(GlobalContext);
+interface Props {}
 
-  if (!globalContext) {
-    throw new Error("GlobalContext must be used within a GlobalProvider");
-  }
+const Home: FC<Props> = () => {
+  const dispatch = useAppDispatch();
+  const { open, activeItem, route } = useAppSelector((state) => state.global);
 
-  const { setActiveItem, setRoute } = globalContext;
-
-  // Set the initial values for Home page
   useEffect(() => {
-    setActiveItem(0); // Assuming '0' corresponds to the "Home" item
-    setRoute("Home");
-  }, [setActiveItem, setRoute]);
+    dispatch(setOpen(false));
+    dispatch(setActiveItem(0));
+    dispatch(setRoute("Home"));
+  }, [dispatch]);
+
+  const fallbackComponent = <LoadingSpinner />;
 
   return (
-    <div className="page-container">
-      <Hero />
-      <Courses />
-      <Reviews />
-      <FAQ />
-    </div>
+    <Suspense fallback={fallbackComponent}>
+      <div className="page-container">
+        <Hero />
+        <Courses />
+        <Reviews />
+        <FAQ />
+      </div>
+    </Suspense>
   );
 };
 
