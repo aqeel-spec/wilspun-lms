@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation"; // For getting the current pathna
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
 import socketIO from "socket.io-client";
 import MainLayout from "./utils/MainLayout";
-// import AdminLayout from "./utils/AdminLayout";
+import AdminLayout from "./utils/AdminLayout";
 
 // Dynamic imports for components
 const Loader = dynamic(() => import("@/app/components/Loader/Loader"), {
@@ -50,8 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <CustomProvider>
                 {isAdminRoute ? (
-                  // <AdminLayout>{children}</AdminLayout>
-                  <h1>Hello</h1>
+                  <AdminLayout>{children}</AdminLayout>
                 ) : (
                   <MainLayout>{children}</MainLayout>
                 )}

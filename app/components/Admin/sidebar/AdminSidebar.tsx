@@ -25,6 +25,7 @@ import { useSelector } from "react-redux";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { FaShieldHalved } from "react-icons/fa6";
 
 interface itemProps {
   title: string;
@@ -125,7 +126,7 @@ const AdminSidebar = () => {
               >
                 <Link href="/" className="block">
                   <h3 className="text-[25px] font-Poppins uppercase dark:text-white text-black">
-                    ELearning
+                    Wilspun LMS
                   </h3>
                 </Link>
                 <IconButton
@@ -164,8 +165,11 @@ const AdminSidebar = () => {
                 <Typography
                   variant="h6"
                   sx={{ m: "10px 0 0 0" }}
-                  className="!text-[20px] text-black dark:text-[#ffffffc1] capitalize"
+                  className="!text-[20px] text-black dark:text-[#ffffffc1] capitalize flex items-center justify-center"
                 >
+                  {user?.role === "admin" && (
+                    <FaShieldHalved className="mr-2 text-green-500" />
+                  )}
                   - {user?.role}
                 </Typography>
               </Box>

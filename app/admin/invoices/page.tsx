@@ -1,31 +1,45 @@
-'use client'
-import React from 'react'
-import AdminSidebar from "../../components/Admin/sidebar/AdminSidebar";
-import Heading from '../../../app/utils/Heading';
-import DashboardHeader from '../../../app/components/Admin/DashboardHeader';
-import AllInvoices from "../../../app/components/Admin/Order/AllInvoices";
+"use client";
+import React, { Suspense } from "react";
+import dynamic from "next/dynamic";
+import Loader2 from "@/app/components/Loader/Loader2";
 
-type Props = {}
+const Heading = dynamic(() => import("../../../app/utils/Heading"), {
+  ssr: false,
+  loading: () => <Loader2 />,
+});
+const DashboardHeader = dynamic(() => import("../../../app/components/Admin/DashboardHeader"), {
+  ssr: false,
+  loading: () => <Loader2 />,
+});
+const AllInvoices = dynamic(() => import("../../../app/components/Admin/Order/AllInvoices"), {
+  ssr: false,
+  loading: () => <Loader2 />,
+});
 
-const page = (props: Props) => {
+type Props = {};
+
+const Page: React.FC<Props> = (props) => {
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+      <Suspense fallback={<Loader2 />}>
         <Heading
-         title="Elearning - Admin"
-         description="ELearning is a platform for students to learn and get help from teachers"
-         keywords="Prograaming,MERN,Redux,Machine Learning"
+          title="Wilpsun LMS - Admin"
+          description="ELearning is a platform for students to learn and get help from teachers"
+          keywords="Programming,MERN,Redux,Machine Learning"
         />
-        <div className="flex">
-            <div className="1500px:w-[16%] w-1/5">
-                <AdminSidebar />
-            </div>
-            <div className="w-[85%]">
-               <DashboardHeader />
-               <AllInvoices />
-            </div>
+      </Suspense>
+      <div className="flex">
+        <div className="w-[85%]">
+          <Suspense fallback={<Loader2 />}>
+            <DashboardHeader />
+          </Suspense>
+          <Suspense fallback={<Loader2 />}>
+            <AllInvoices />
+          </Suspense>
         </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

@@ -1,34 +1,38 @@
-// 'use client';
+'use client';
 
-// import React, { FC, useState } from "react";
-// import dynamic from 'next/dynamic';
-// import { useSelector } from "react-redux";
-// import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
+import dynamic from 'next/dynamic';
+import { useAppDispatch, useAppSelector } from "@/redux/features/reduxHooks";
+import { setOpen, setActiveItem, setRoute } from "@/redux/features/globalSlice";
+import Loader from "@/app/components/Loader/Loader";
 
-// // Dynamic imports for components
-// const Protected = dynamic(() => import("../hooks/useProtected"), { ssr: false });
-// const Heading = dynamic(() => import("../utils/Heading"), { ssr: false });
-// const Profile = dynamic(() => import("../components/Profile/Profile"), { ssr: false });
-// type Props = {};
+// Dynamic imports for components
+const Protected = dynamic(() => import("@/app/hooks/useProtected"), { ssr: false, loading: () => <Loader /> });
+const Heading = dynamic(() => import("@/app/utils/Heading"), { ssr: false, loading: () => <Loader /> });
+const Profile = dynamic(() => import("@/app/components/Profile/Profile"), { ssr: false, loading: () => <Loader /> });
 
-// const Page: FC<Props> = (props) => {
-//   const [open, setOpen] = useState(false);
-//   const [activeItem, setActiveItem] = useState(5);
-//   const [route, setRoute] = useState("Login");
-//   const { user } = useSelector((state: any) => state.auth);
+const ProfilePage: React.FC = () => {
+  const dispatch = useAppDispatch();
+  const { user } : {user : any} = useAppSelector((state) => state.auth);
 
-//   return (
-//     <div className="min-h-screen">
-//       <Protected>
-//         <Heading
-//           title={`${user?.name} profile - Elearning`}
-//           description="ELearning is a platform for students to learn and get help from teachers"
-//           keywords="Prograaming, MERN, Redux, Machine Learning"
-//         />
-//         <Profile user={user} />
-//       </Protected>
-//     </div>
-//   );
-// };
+  useEffect(() => {
+    dispatch(setActiveItem(5)); // Assuming '5' corresponds to the "Profile" item
+    dispatch(setRoute("Profile"));
+    dispatch(setOpen(false)); // Assuming you want to start with the modal closed
+  }, [dispatch]);
 
-// export default Page;
+  return (
+    <div className="min-h-screen">
+      <Protected>
+        <Heading
+          title={`${user?.name} profile - Wilpsun LMS`}
+          description="ELearning is a platform for students to learn and get help from teachers"
+          keywords="Programming, MERN, Redux, Machine Learning"
+        />
+        <Profile user={user} />
+      </Protected>
+    </div>
+  );
+};
+
+export default ProfilePage;
