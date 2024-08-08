@@ -1,34 +1,43 @@
-'use client'
-import DashboardHero from '@/app/components/Admin/DashboardHero'
-import AdminProtected from '@/app/hooks/adminProtected'
-import Heading from '@/app/utils/Heading'
-import React from 'react'
-import AdminSidebar from "../../components/Admin/sidebar/AdminSidebar";
-import EditHero from "../../components/Admin/Customization/EditHero";
+"use client";
+import React, { Suspense } from "react";
+import dynamic from "next/dynamic";
+import Loader2 from "@/app/components/Loader/Loader2";
 
-type Props = {}
+const DashboardHero = dynamic(() => import("@/app/components/Admin/DashboardHero"), {
+  loading: () => <Loader2 />,
+});
+const AdminProtected = dynamic(() => import("@/app/hooks/adminProtected"), {
+  loading: () => <Loader2 />,
+});
+const Heading = dynamic(() => import("@/app/utils/Heading"), {
+  loading: () => <Loader2 />,
+});
+const EditHero = dynamic(() => import("../../components/Admin/Customization/EditHero"), {
+  loading: () => <Loader2 />,
+});
 
-const page = (props: Props) => {
+type Props = {};
+
+const Page = (props: Props) => {
   return (
     <div>
-      <AdminProtected>
-        <Heading
-          title="Elearning - Admin"
-          description="ELearning is a platform for students to learn and get help from teachers"
-          keywords="Programming,MERN,Redux,Machine Learning"
-        />
-        <div className="flex h-screen">
-          <div className="1500px:w-[16%] w-1/5">
-            <AdminSidebar />
+      <Suspense fallback={<Loader2 />}>
+        <AdminProtected>
+          <Heading
+            title="Elearning - Admin"
+            description="ELearning is a platform for students to learn and get help from teachers"
+            keywords="Programming,MERN,Redux,Machine Learning"
+          />
+          <div className="flex h-screen">
+            <div className="w-[85%]">
+              <DashboardHero />
+              <EditHero />
+            </div>
           </div>
-          <div className="w-[85%]">
-            <DashboardHero />
-           <EditHero />
-          </div>
-        </div>
-      </AdminProtected>
+        </AdminProtected>
+      </Suspense>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default Page;

@@ -1,14 +1,31 @@
-'use client'
-import DashboardHero from '@/app/components/Admin/DashboardHero'
-import AdminProtected from '@/app/hooks/adminProtected'
-import Heading from '@/app/utils/Heading'
-import React from 'react'
-import AdminSidebar from "../../components/Admin/sidebar/AdminSidebar";
-import AllCourses from "../../components/Admin/Course/AllCourses";
+'use client';
+import React from 'react';
+import dynamic from 'next/dynamic';
+import Loader2 from '@/app/components/Loader/Loader2';
 
-type Props = {}
+const DashboardHero = dynamic(() => import('@/app/components/Admin/DashboardHero'), {
+  ssr: false,
+  loading: () => <Loader2 />,
+});
 
-const page = (props: Props) => {
+const AdminProtected = dynamic(() => import('@/app/hooks/adminProtected'), {
+  ssr: false,
+  loading: () => <Loader2 />,
+});
+
+const Heading = dynamic(() => import('@/app/utils/Heading'), {
+  ssr: false,
+  loading: () => <Loader2 />,
+});
+
+const AllCourses = dynamic(() => import('../../components/Admin/Course/AllCourses'), {
+  ssr: false,
+  loading: () => <Loader2 />,
+});
+
+type Props = {};
+
+const page: React.FC<Props> = (props) => {
   return (
     <div>
       <AdminProtected>
@@ -18,9 +35,6 @@ const page = (props: Props) => {
           keywords="Programming,MERN,Redux,Machine Learning"
         />
         <div className="flex h-screen">
-          <div className="1500px:w-[16%] w-1/5">
-            <AdminSidebar />
-          </div>
           <div className="w-[85%]">
             <DashboardHero />
             <AllCourses />
@@ -28,7 +42,7 @@ const page = (props: Props) => {
         </div>
       </AdminProtected>
     </div>
-  )
-}
+  );
+};
 
-export default page
+export default page;

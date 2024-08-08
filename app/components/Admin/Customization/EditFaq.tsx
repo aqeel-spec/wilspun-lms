@@ -22,7 +22,7 @@ const EditFaq = (props: Props) => {
 
   useEffect(() => {
     if (data) {
-      setQuestions(data.layout.faq);
+      setQuestions(data.layout?.faq);
     }
     if(layoutSuccess){
         toast.success("FAQ updated successfully");
@@ -38,19 +38,19 @@ const EditFaq = (props: Props) => {
 
   const toggleQuestion = (id: any) => {
     setQuestions((prevQuestions) =>
-      prevQuestions.map((q) => (q._id === id ? { ...q, active: !q.active } : q))
+      prevQuestions?.map((q) => (q._id === id ? { ...q, active: !q.active } : q))
     );
   };
 
   const handleQuestionChange = (id: any, value: string) => {
     setQuestions((prevQuestions) =>
-      prevQuestions.map((q) => (q._id === id ? { ...q, question: value } : q))
+      prevQuestions?.map((q) => (q._id === id ? { ...q, question: value } : q))
     );
   };
 
   const handleAnswerChange = (id: any, value: string) => {
     setQuestions((prevQuestions) =>
-      prevQuestions.map((q) => (q._id === id ? { ...q, answer: value } : q))
+      prevQuestions?.map((q) => (q._id === id ? { ...q, answer: value } : q))
     );
   };
 
@@ -78,7 +78,7 @@ const EditFaq = (props: Props) => {
 
   const handleEdit = async () => {
     if (
-      !areQuestionsUnchanged(data.layout.faq, questions) &&
+      !areQuestionsUnchanged(data.layout?.faq, questions) &&
       !isAnyQuestionEmpty(questions)
     ) {
       await editLayout({
@@ -97,7 +97,7 @@ const EditFaq = (props: Props) => {
         <div className="w-[90%] 800px:w-[80%] m-auto mt-[120px]">
         <div className="mt-12">
           <dl className="space-y-8">
-            {questions.map((q: any) => (
+            {questions?.map((q: any) => (
               <div
                 key={q._id}
                 className={`${
@@ -165,14 +165,14 @@ const EditFaq = (props: Props) => {
             styles.button
           } !w-[100px] !min-h-[40px] !h-[40px] dark:text-white text-black bg-[#cccccc34] 
               ${
-                areQuestionsUnchanged(data.layout.faq, questions) ||
+                areQuestionsUnchanged(data.layout?.faq, questions) ||
                 isAnyQuestionEmpty(questions)
                   ? "!cursor-not-allowed"
                   : "!cursor-pointer !bg-[#42d383]"
               }
               !rounded fixed bottom-12 right-12`}
           onClick={
-            areQuestionsUnchanged(data.layout.faq, questions) ||
+            areQuestionsUnchanged(data.layout?.faq, questions) ||
             isAnyQuestionEmpty(questions)
               ? () => null
               : handleEdit
