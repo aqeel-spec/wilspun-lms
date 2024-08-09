@@ -1,3 +1,5 @@
+'use client';
+
 import { styles } from "@/app/styles/style";
 import CoursePlayer from "@/app/utils/CoursePlayer";
 import Ratings from "@/app/utils/Ratings";
@@ -16,34 +18,39 @@ type Props = {
   data: any;
   stripePromise: any;
   clientSecret: string;
-  setRoute: any;
-  setOpen: any;
+  setRoute: (route: string) => void;
+  setOpen: (open: boolean) => void;
 };
 
-const CourseDetails = ({
+const CourseDetails: React.FC<Props> = ({
   data,
   stripePromise,
   clientSecret,
   setRoute,
   setOpen: openAuthModal,
-}: Props) => {
-  const { data: userData,refetch } = useLoadUserQuery(undefined, {});
+}) => {
+  const { data: userData, refetch } = useLoadUserQuery(undefined, {});
+  console.log("🚀 ~ data: for testing ourse", data)
   const [user, setUser] = useState<any>();
   const [open, setOpen] = useState(false);
-
+  
+  console.log("🚀 ~ data: from course details", data)
   useEffect(() => {
     setUser(userData?.user);
-  }, [userData]);
+    if (userData?.user) {
+      openAuthModal(false); // Close the modal if user is authenticated
+    }
+  }, [userData, openAuthModal]);
 
-  const dicountPercentenge =
+  const discountPercentage =
     ((data?.estimatedPrice - data.price) / data?.estimatedPrice) * 100;
 
-  const discountPercentengePrice = dicountPercentenge.toFixed(0);
+  const discountPercentagePrice = discountPercentage.toFixed(0);
 
   const isPurchased =
     user && user?.courses?.find((item: any) => item._id === data._id);
 
-  const handleOrder = (e: any) => {
+  const handleOrder = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (user) {
       setOpen(true);
     } else {
@@ -215,6 +222,7 @@ const CourseDetails = ({
           </div>
           <div className="w-full 800px:w-[35%] relative">
             <div className="sticky top-[100px] left-0 z-50 w-full">
+              {/* <CoursePlayer videoUrl={data?.demoUrl} title={data?.title} /> */}
               <CoursePlayer videoUrl={data?.demoUrl} title={data?.title} />
               <div className="flex items-center">
                 <h1 className="pt-5 text-[25px] text-black dark:text-white">
@@ -225,7 +233,7 @@ const CourseDetails = ({
                 </h5>
 
                 <h4 className="pl-5 pt-4 text-[22px] text-black dark:text-white">
-                  {discountPercentengePrice}% Off
+                  {discountPercentagePrice}% Off
                 </h4>
               </div>
               <div className="flex items-center">

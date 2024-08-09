@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useAppDispatch, useAppSelector } from "@/redux/features/reduxHooks";
 import { setOpen, setActiveItem, setRoute } from "@/redux/features/globalSlice";
 import LoadingSpinner from "../components/Loader/Loader"; // Assume there's a spinner component for loading
+import { RootState } from "@/redux/features/store";
 
 const Header = dynamic(() => import("../components/Header"), {
   ssr: false,
@@ -30,7 +31,7 @@ interface Props {}
 
 const Home: FC<Props> = () => {
   const dispatch = useAppDispatch();
-  const { open, activeItem, route } = useAppSelector((state) => state.global);
+  const { open, activeItem, route } = useAppSelector((state: RootState) => state.global);
 
   useEffect(() => {
     dispatch(setOpen(false));

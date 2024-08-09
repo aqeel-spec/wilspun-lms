@@ -1,26 +1,73 @@
-import Ratings from "@/app/utils/Ratings";
-import Image from "next/image";
-import Link from "next/link";
-import React, { FC } from "react";
-import { AiOutlineUnorderedList } from "react-icons/ai";
-import { FiExternalLink } from "react-icons/fi";
+'use client';
+
+import dynamic from 'next/dynamic';
+import React, { FC, useCallback, useState } from 'react';
+import { AiOutlineUnorderedList } from 'react-icons/ai';
+import { FiExternalLink } from 'react-icons/fi';
+import { useAppDispatch, useAppSelector } from '@/redux/features/reduxHooks';
+import { setOpen, setRoute } from '@/redux/features/globalSlice';
+import { toast } from 'react-hot-toast';
+import { RootState } from '@/redux/features/store';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+// import { Router } from 'next/router';
+
+// Dynamic import of the Ratings component
+const Ratings = dynamic(() => import('@/app/utils/Ratings'), { ssr: false });
 
 type Props = {
-  item: any;
+  item: {
+    _id: string;
+    name: string;
+    shortDescription?: string;
+    thumbnail: { url: string };
+    ratings: number;
+    ratingsCount: number;
+    courseData?: Array<any>;
+    price: number;
+    estimatedPrice?: number | any;
+  };
   isProfile?: boolean;
 };
 
 const CourseCard: FC<Props> = ({ item, isProfile }) => {
-  // Function to truncate the course name and add tooltip
-  const truncateName = (name: string, length: number) => {
-    if (name.length > length) {
-      return name.slice(0, length) + "...";
-    }
-    return name;
-  };
+  const dispatch = useAppDispatch();
+  const { user } = useAppSelector((state: RootState) => state.auth);
+  const { route } = useAppSelector((state: RootState) => state.global);
+  const [notificationShown, setNotificationShown] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Handle course click
+  const handleCourseClick = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+      if (!user) {
+        e.preventDefault();
+        const searchParamsString = searchParams ? `?${searchParams.toString()}` : '';
+        const fullPath = `${pathname}${searchParamsString}`;
+        dispatch(setRoute(fullPath));
+        dispatch(setOpen(true));
+        dispatch(setRoute("Login"));
+        if (!notificationShown) {
+          toast.error("Please log in to continue.", {
+            position: "top-right",
+          });
+          setNotificationShown(true);
+        }
+      }
+    },
+    
+    [dispatch, user, pathname, searchParams, notificationShown, route]
+  );
+
 
   return (
-    <Link href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`} passHref>
+    <Link
+      href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`}
+      onClick={handleCourseClick}
+    >
       <div className="max-w-md bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform transform hover:scale-105">
         <div className="w-full h-[200px] overflow-hidden">
           <Image
@@ -32,12 +79,12 @@ const CourseCard: FC<Props> = ({ item, isProfile }) => {
             alt={item.name}
           />
         </div>
-        <div className=" p-8 md:p-6 lg:p-[12px]  ">
+        <div className="p-8 md:p-6 lg:p-[12px]">
           <h5
             className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate"
             title={item.name}
           >
-            {truncateName(item.name, 50)}
+            {item.name}
           </h5>
           <p className="mb-3 text-gray-700 dark:text-gray-400 text-sm">
             {item.shortDescription || "No description available"}
@@ -67,15 +114,10 @@ const CourseCard: FC<Props> = ({ item, isProfile }) => {
                 </span>
               )}
             </div>
-            <Link
-              href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`}
-              passHref
-            >
-              <div className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                Read more
-                <FiExternalLink className="w-4 h-4 ml-2" />
-              </div>
-            </Link>
+            <div className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              Read more
+              <FiExternalLink className="w-4 h-4 ml-2" />
+            </div>
           </div>
         </div>
       </div>
@@ -85,11 +127,26 @@ const CourseCard: FC<Props> = ({ item, isProfile }) => {
 
 export default CourseCard;
 
+
+
+
+
+
+
+
+
 // import Ratings from "@/app/utils/Ratings";
 // import Image from "next/image";
 // import Link from "next/link";
-// import React, { FC } from "react";
+// import React, { FC, useCallback, useEffect } from "react";
 // import { AiOutlineUnorderedList } from "react-icons/ai";
+// import { FiExternalLink } from "react-icons/fi";
+// import { useAppDispatch, useAppSelector } from "@/redux/features/reduxHooks";
+// import { setOpen, setRoute } from "@/redux/features/globalSlice";
+// import { toast } from "react-hot-toast";
+// import { RootState } from "@/redux/features/store";
+// import { useGetCourseDetailsQuery } from "@/redux/features/courses/coursesApi";
+// import { useRouter } from "next/navigation";
 
 // type Props = {
 //   item: any;
@@ -97,17 +154,47 @@ export default CourseCard;
 // };
 
 // const CourseCard: FC<Props> = ({ item, isProfile }) => {
-//   // Function to truncate the course name and add tooltip
-//   const truncateName = (name: string, length: number) => {
-//     if (name.length > length) {
-//       return name.slice(0, length) + "...";
+//   const dispatch = useAppDispatch();
+//   const { user } = useAppSelector((state: RootState) => state.auth);
+//   const {refresh} = useRouter();
+
+//   // Fetch course details using the provided course ID
+//   const { refetch } = useGetCourseDetailsQuery(item._id, {
+//     skip: !user, // Skip query if the user is not logged in
+//   });
+
+//   // Handle course click
+//   const handleCourseClick = useCallback(
+//     (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+//       if (!user) {
+//         e.preventDefault(); // Prevent the default link action
+//         dispatch(setRoute("Login"));
+//         dispatch(setOpen(true));
+//         toast.error("Please log in to continue.", {
+//           position: "top-right",
+//         });
+//       } else {
+//         // Refetch course details when the user is logged in
+//         refetch();
+//       }
+//     },
+//     [dispatch, user, refetch]
+//   );
+
+//   // Refetch course details if the user logs in
+//   useEffect(() => {
+//     if (user) {
+//       refresh()
+//       refetch();
 //     }
-//     return name;
-//   };
+//   }, [user, refetch]);
 
 //   return (
-//     <Link href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`}>
-//       <div className="max-w-lg bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform transform hover:scale-105">
+//     <Link
+//       href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`}
+//       onClick={handleCourseClick}
+//     >
+//       <div className="max-w-md bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 overflow-hidden transition-transform transform hover:scale-105">
 //         <div className="w-full h-[200px] overflow-hidden">
 //           <Image
 //             src={item.thumbnail.url}
@@ -115,20 +202,20 @@ export default CourseCard;
 //             height={300}
 //             objectFit="cover"
 //             className="w-full h-full object-cover"
-//             alt={item.name}
+//             alt={item?.name}
 //           />
 //         </div>
-//         <div className="p-5">
+//         <div className="p-8 md:p-6 lg:p-[12px]">
 //           <h5
-//             className="mb-2 text-2xl font-semibold tracking-tight text-gray-900 dark:text-white truncate"
-//             title={item.name}
+//             className="mb-2 text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate"
+//             title={item?.name}
 //           >
-//             {truncateName(item.name, 70)}
+//             {item.name}
 //           </h5>
-//           <div className="mb-3 text-gray-700 dark:text-gray-400 text-sm">
+//           <p className="mb-3 text-gray-700 dark:text-gray-400 text-sm">
 //             {item.shortDescription || "No description available"}
-//           </div>
-//           <div className="flex items-center justify-between mb-3">
+//           </p>
+//           <div className="flex items-center justify-between mb-4">
 //             <div className="flex items-center">
 //               <Ratings rating={item.ratings} />
 //               <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
@@ -136,7 +223,7 @@ export default CourseCard;
 //               </span>
 //             </div>
 //             <div className="flex items-center">
-//               <AiOutlineUnorderedList size={20} fill="#fff" />
+//               <AiOutlineUnorderedList size={20} className="text-gray-700 dark:text-gray-300" />
 //               <span className="ml-2 text-sm text-gray-700 dark:text-gray-300">
 //                 {item.courseData?.length} {item.courseData?.length === 1 ? "Lecture" : "Lectures"}
 //               </span>
@@ -153,27 +240,10 @@ export default CourseCard;
 //                 </span>
 //               )}
 //             </div>
-//             <Link
-//               href={!isProfile ? `/course/${item._id}` : `course-access/${item._id}`}
-//               className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-//             >
+//             <div className="inline-flex items-center px-3 py-2 text-sm font-medium text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
 //               Read more
-//               <svg
-//                 className="w-3.5 h-3.5 ml-2"
-//                 aria-hidden="true"
-//                 xmlns="http://www.w3.org/2000/svg"
-//                 fill="none"
-//                 viewBox="0 0 14 10"
-//               >
-//                 <path
-//                   stroke="currentColor"
-//                   strokeLinecap="round"
-//                   strokeLinejoin="round"
-//                   strokeWidth="2"
-//                   d="M1 5h12m0 0L9 1m4 4L9 9"
-//                 />
-//               </svg>
-//             </Link>
+//               <FiExternalLink className="w-4 h-4 ml-2" />
+//             </div>
 //           </div>
 //         </div>
 //       </div>

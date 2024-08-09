@@ -1,13 +1,15 @@
-"use client";
-import React, { FC } from "react";
+'use client';
+
+import React, { FC, Suspense } from "react";
 import dynamic from "next/dynamic";
 import LoadingSpinner from "../components/Loader/Loader";
 
-
+// Dynamic imports with suspense fallback for loading spinner
 const DynamicHeader = dynamic(() => import("../components/Header"), {
   ssr: false,
   loading: () => <LoadingSpinner />,
 });
+
 const DynamicFooter = dynamic(() => import("../components/Footer"), {
   ssr: false,
   loading: () => <LoadingSpinner />,
@@ -18,17 +20,19 @@ interface MainLayoutProps {
 }
 
 const MainLayout: FC<MainLayoutProps> = ({ children }) => {
-
-
   return (
-    <div className="main-layout">
-      <React.Suspense fallback={<LoadingSpinner />}>
+    <div className="main-layout flex flex-col min-h-screen">
+      <Suspense fallback={<LoadingSpinner />}>
         <DynamicHeader />
-      </React.Suspense>
-      <div>{children}</div>
-      <React.Suspense fallback={<LoadingSpinner />}>
+      </Suspense>
+
+      <main className="flex-grow">
+        {children}
+      </main>
+
+      <Suspense fallback={<LoadingSpinner />}>
         <DynamicFooter />
-      </React.Suspense>
+      </Suspense>
     </div>
   );
 };
